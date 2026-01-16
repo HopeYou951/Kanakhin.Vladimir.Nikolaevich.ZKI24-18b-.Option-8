@@ -142,7 +142,7 @@ public class Main {
 					break;
 
 				case 5:
-					// Сортировка объектов по возрастанию цены (пузырьком)
+					// Сортировка объектов по возрастанию цены
 					for (int i = 0; i < furnitureList.size() - 1; i++) {
 						for (int j = 0; j < furnitureList.size() - i - 1; j++) {
 							if (furnitureList.get(j).getPrice() > furnitureList.get(j + 1).getPrice()) {
