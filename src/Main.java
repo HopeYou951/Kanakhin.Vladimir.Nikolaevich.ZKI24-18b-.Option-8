@@ -3,174 +3,170 @@ import java.util.Scanner;
 
 public class Main {
 
-    // Методы проверки корректности ввода данных
+	// Методы проверки корректности ввода данных
+	static int readInt(Scanner scanner, String message) {
+		System.out.print(message);
 
-    static int readInt(Scanner scanner, String message) {
-        System.out.print(message);
+		while (!scanner.hasNextInt()) {
+			System.out.print("Ошибка! Введите целое число: ");
+			scanner.next();
+		}
 
-        while (!scanner.hasNextInt()) {
-            System.out.print("Ошибка! Введите целое число: ");
-            scanner.next();
-        }
+		int value = scanner.nextInt();
+		scanner.nextLine();
+		return value;
+	}
 
-        int value = scanner.nextInt();
-        scanner.nextLine();
-        return value;
-    }
+	static double readDouble(Scanner scanner, String message) {
+		System.out.print(message);
 
-    static double readDouble(Scanner scanner, String message) {
-        System.out.print(message);
+		while (!scanner.hasNextDouble()) {
+			System.out.print("Ошибка! Введите число: ");
+			scanner.next();
+		}
 
-        while (!scanner.hasNextDouble()) {
-            System.out.print("Ошибка! Введите число: ");
-            scanner.next();
-        }
+		double value = scanner.nextDouble();
+		scanner.nextLine();
+		return value;
+	}
 
-        double value = scanner.nextDouble();
-        scanner.nextLine();
-        return value;
-    }
+	public static void main(String[] args) {
+		ArrayList<Furniture> furnitureList = new ArrayList<>();
+		Scanner scanner = new Scanner(System.in);
+		boolean work = true;
 
-    public static void main(String[] args) {
+		// Главное меню программы
+		while (work) {
+			System.out.println("\n=== МЕНЮ ===");
+			System.out.println("1. Добавить пустой объект");
+			System.out.println("2. Добавить объект с данными");
+			System.out.println("3. Редактировать поле объекта");
+			System.out.println("4. Показать все объекты");
+			System.out.println("5. Сортировка по цене (возрастание)");
+			System.out.println("6. Выход");
 
-        ArrayList<Furniture> furnitureList = new ArrayList<>();
-        Scanner scanner = new Scanner(System.in);
-        boolean work = true;
+			int choice = readInt(scanner, "Выберите пункт: ");
 
-        // Главное меню программы
-        while (work) {
-            System.out.println("\n=== МЕНЮ ===");
-            System.out.println("1. Добавить пустой объект");
-            System.out.println("2. Добавить объект с данными");
-            System.out.println("3. Редактировать поле объекта");
-            System.out.println("4. Показать все объекты");
-            System.out.println("5. Сортировка по цене (возрастание)");
-            System.out.println("6. Выход");
+			switch (choice) {
+				case 1:
+					// Создание объекта с конструктором по умолчанию
+					furnitureList.add(new Furniture());
+					System.out.println("Пустой объект добавлен.");
+					break;
 
-            int choice = readInt(scanner, "Выберите пункт: ");
+				case 2:
+					// Создание объекта с вводом данных
+					System.out.print("Введите тип мебели: ");
+					String type = scanner.nextLine();
 
-            switch (choice) {
+					System.out.print("Введите материал: ");
+					String material = scanner.nextLine();
 
-                // Создание объекта с конструктором по умолчанию
-                case 1:
-                    furnitureList.add(new Furniture());
-                    System.out.println("Пустой объект добавлен.");
-                    break;
+					int weight = readInt(scanner, "Введите вес (кг): ");
+					double price = readDouble(scanner, "Введите цену: ");
 
-                // Создание объекта с вводом данных
-                case 2:
-                    System.out.print("Введите тип мебели: ");
-                    String type = scanner.nextLine();
+					furnitureList.add(new Furniture(type, material, weight, price));
+					System.out.println("Объект добавлен.");
+					break;
 
-                    System.out.print("Введите материал: ");
-                    String material = scanner.nextLine();
+				case 3:
+					// Редактирование выбранного объекта
+					if (furnitureList.isEmpty()) {
+						System.out.println("Список пуст.");
+						break;
+					}
 
-                    int weight = readInt(scanner, "Введите вес (кг): ");
-                    double price = readDouble(scanner, "Введите цену: ");
+					for (int i = 0; i < furnitureList.size(); i++) {
+						System.out.println(i + ": " + furnitureList.get(i));
+					}
 
-                    furnitureList.add(new Furniture(type, material, weight, price));
-                    System.out.println("Объект добавлен.");
-                    break;
+					int index = readInt(scanner, "Введите индекс объекта: ");
 
-                // Редактирование выбранного объекта
-                case 3:
-                    if (furnitureList.isEmpty()) {
-                        System.out.println("Список пуст.");
-                        break;
-                    }
+					if (index < 0 || index >= furnitureList.size()) {
+						System.out.println("Некорректный индекс.");
+						break;
+					}
 
-                    for (int i = 0; i < furnitureList.size(); i++) {
-                        System.out.println(i + ": " + furnitureList.get(i));
-                    }
+					Furniture f = furnitureList.get(index);
+					boolean editing = true;
 
-                    int index = readInt(scanner, "Введите индекс объекта: ");
+					// Меню редактирования полей объекта
+					while (editing) {
+						System.out.println("\nРедактирование объекта:");
+						System.out.println("1. Тип");
+						System.out.println("2. Материал");
+						System.out.println("3. Вес");
+						System.out.println("4. Цена");
+						System.out.println("5. Назад");
 
-                    if (index < 0 || index >= furnitureList.size()) {
-                        System.out.println("Некорректный индекс.");
-                        break;
-                    }
+						int field = readInt(scanner, "Выберите поле: ");
 
-                    Furniture f = furnitureList.get(index);
-                    boolean editing = true;
+						switch (field) {
+							case 1:
+								System.out.print("Новый тип: ");
+								f.setType(scanner.nextLine());
+								break;
 
-                    // Меню редактирования полей объекта
-                    while (editing) {
-                        System.out.println("\nРедактирование объекта:");
-                        System.out.println("1. Тип");
-                        System.out.println("2. Материал");
-                        System.out.println("3. Вес");
-                        System.out.println("4. Цена");
-                        System.out.println("5. Назад");
+							case 2:
+								System.out.print("Новый материал: ");
+								f.setMaterial(scanner.nextLine());
+								break;
 
-                        int field = readInt(scanner, "Выберите поле: ");
+							case 3:
+								f.setWeight(readInt(scanner, "Новый вес: "));
+								break;
 
-                        switch (field) {
-                            case 1:
-                                System.out.print("Новый тип: ");
-                                f.setType(scanner.nextLine());
-                                break;
+							case 4:
+								f.setPrice(readDouble(scanner, "Новая цена: "));
+								break;
 
-                            case 2:
-                                System.out.print("Новый материал: ");
-                                f.setMaterial(scanner.nextLine());
-                                break;
+							case 5:
+								editing = false;
+								break;
 
-                            case 3:
-                                f.setWeight(readInt(scanner, "Новый вес: "));
-                                break;
+							default:
+								System.out.println("Неверный выбор.");
+						}
+					}
+					break;
 
-                            case 4:
-                                f.setPrice(readDouble(scanner, "Новая цена: "));
-                                break;
+				case 4:
+					// Вывод списка всех объектов
+					if (furnitureList.isEmpty()) {
+						System.out.println("Список пуст.");
+					} else {
+						for (int i = 0; i < furnitureList.size(); i++) {
+							System.out.println(i + ": " + furnitureList.get(i));
+						}
+					}
+					break;
 
-                            case 5:
-                                editing = false;
-                                break;
+				case 5:
+					// Сортировка объектов по возрастанию цены (пузырьком)
+					for (int i = 0; i < furnitureList.size() - 1; i++) {
+						for (int j = 0; j < furnitureList.size() - i - 1; j++) {
+							if (furnitureList.get(j).getPrice() > furnitureList.get(j + 1).getPrice()) {
+								Furniture temp = furnitureList.get(j);
+								furnitureList.set(j, furnitureList.get(j + 1));
+								furnitureList.set(j + 1, temp);
+							}
+						}
+					}
+					System.out.println("Сортировка выполнена.");
+					break;
 
-                            default:
-                                System.out.println("Неверный выбор.");
-                        }
-                    }
-                    break;
+				case 6:
+					// Завершение работы программы
+					work = false;
+					System.out.println("Завершение программы.");
+					break;
 
-                // Вывод списка всех объектов
-                case 4:
-                    if (furnitureList.isEmpty()) {
-                        System.out.println("Список пуст.");
-                    } else {
-                        for (int i = 0; i < furnitureList.size(); i++) {
-                            System.out.println(i + ": " + furnitureList.get(i));
-                        }
-                    }
-                    break;
+				default:
+					System.out.println("Неверный пункт меню.");
+			}
+		}
 
-                // Сортировка объектов по возрастанию цены
-                case 5:
-                    for (int i = 0; i < furnitureList.size() - 1; i++) {
-                        for (int j = 0; j < furnitureList.size() - i - 1; j++) {
-                            if (furnitureList.get(j).getPrice() > furnitureList.get(j + 1).getPrice()) {
-
-                                Furniture temp = furnitureList.get(j);
-                                furnitureList.set(j, furnitureList.get(j + 1));
-                                furnitureList.set(j + 1, temp);
-                            }
-                        }
-                    }
-                    System.out.println("Сортировка выполнена.");
-                    break;
-
-                // Завершение работы программы
-                case 6:
-                    work = false;
-                    System.out.println("Завершение программы.");
-                    break;
-
-                default:
-                    System.out.println("Неверный пункт меню.");
-            }
-        }
-
-        // Закрытие ресурса Scanner
-        scanner.close();
-    }
+		// Закрытие ресурса Scanner
+		scanner.close();
+	}
 }
