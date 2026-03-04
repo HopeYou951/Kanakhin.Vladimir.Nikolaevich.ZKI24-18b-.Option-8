@@ -1,5 +1,8 @@
+import java.util.logging.Logger;
 public class Furniture {
 
+	private static final Logger logger =
+			Logger.getLogger(Furniture.class.getName());
 	private String type;
 	private String material;
 	private int weight;
@@ -14,7 +17,7 @@ public class Furniture {
 	}
 
 	// Конструктор с параметрами
-	public Furniture(String type, String material, int weight, double price) {
+	public Furniture(String type, String material, int weight, double price) throws InvalidFurnitureDataException, InvalidNumericValueException {
 		setType(type);
 		setMaterial(material);
 		setWeight(weight);
@@ -39,30 +42,41 @@ public class Furniture {
 		return price;
 	}
 
-	// Сеттеры с проверкой корректности значений
+	// Сеттеры с исключениями
 
-	public void setType(String type) {
-		if (type != null && !type.isEmpty()) {
-			this.type = type;
+	public void setType(String type) throws InvalidFurnitureDataException {
+		if (type == null || type.isEmpty()) {
+			logger.warning("Попытка установить пустой тип");
+			throw new InvalidFurnitureDataException(
+					"Тип мебели не может быть пустым");
 		}
+		this.type = type;
 	}
 
-	public void setMaterial(String material) {
-		if (material != null && !material.isEmpty()) {
-			this.material = material;
+	public void setMaterial(String material) throws InvalidFurnitureDataException {
+		if (material == null || material.isEmpty()) {
+			logger.warning("Попытка установить пустой материал");
+			throw new InvalidFurnitureDataException("Материал не может быть пустым");
 		}
+		this.material = material;
 	}
 
-	public void setWeight(int weight) {
-		if (weight >= 0) {
-			this.weight = weight;
+	public void setWeight(int weight) throws InvalidNumericValueException {
+		assert weight >= -1000 : "Некорректный вес!";
+		if (weight < 0) {
+			logger.warning("Попытка установить отрицательный вес");
+			throw new InvalidNumericValueException(
+					"Вес не может быть отрицательным");
 		}
+		this.weight = weight;
 	}
 
-	public void setPrice(double price) {
-		if (price >= 0) {
-			this.price = price;
+	public void setPrice(double price) throws InvalidNumericValueException {
+		if (price < 0) {
+			logger.warning("Попытка установить отрицательную цену");
+			throw new InvalidNumericValueException("Цена не может быть отрицательной");
 		}
+		this.price = price;
 	}
 
 	// Определение категории мебели по весу
@@ -78,6 +92,6 @@ public class Furniture {
 
 	@Override
 	public String toString() {
-		return "Тип: " + type + ", Материал: " + material + ", Вес: " + weight + ", Цена: " + price + ", Категория: " + getFurnitureCategory();
+		return "Тип: " + type + ", Материал: " + material + ", Вес : " + weight + " кг" + ", Цена: " + price + ", Категория: " + getFurnitureCategory();
 	}
 }
