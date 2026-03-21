@@ -1,198 +1,312 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
+
+/**
+ * Главный класс приложения.
+ * Реализует меню и взаимодействие с пользователем.
+ */
 public class Main {
 
-	// Методы проверки корректности ввода данных
-	static int readInt(Scanner scanner, String message) throws InvalidNumericValueException {
-		System.out.print(message);
+  private static final Logger logger = Logger.getLogger(Main.class.getName());
 
-		String input = scanner.nextLine();
+  /**
+   * Очищает консоль.
+   * Реализация зависит от операционной системы.
+   */
+  public static void clearConsole() {
+    for (int i = 0; i < 40; i++) {
+      System.out.println();
+    }
+  }
 
-		try {
-			return Integer.parseInt(input);
-		}
-		catch (NumberFormatException e) {
-			throw new InvalidNumericValueException("Введено не целое число", e);
-		}
-	}
+  /**
+   * Вывод заголовка
+   */
+  public static void printHeader(String title) {
+    System.out.println("==================================");
+    System.out.println("   " + title);
+    System.out.println("==================================");
+  }
 
-	static double readDouble(Scanner scanner, String message) throws InvalidNumericValueException {
-		System.out.print(message);
-		String input = scanner.nextLine();
+  /**
+   * Приостанавливает выполнение программы до нажатия Enter.
+   *
+   * @param scanner объект Scanner
+   */
+  public static void pause(Scanner scanner) {
+    System.out.println("\nНажмите Enter для продолжения...");
+    scanner.nextLine();
+  }
 
-		try {
-			return Double.parseDouble(input);
-		}
-		catch (NumberFormatException e) {
-			throw new InvalidNumericValueException("Введено не число", e);
-		}
-	}
+  /**
+   * Считывает целое число с проверкой корректности.
+   *
+   * @param scanner объект Scanner
+   * @param message сообщение пользователю
+   * @return введённое число
+   * @throws InvalidNumericValueException если введено не число
+   */
+  public static int readInt(Scanner scanner, String message) throws InvalidNumericValueException {
+    System.out.print(message);
+    String input = scanner.nextLine();
 
-	public static void main(String[] args) throws InvalidFurnitureDataException, InvalidNumericValueException {
-		ArrayList<Furniture> furnitureList = new ArrayList<>();
-		try (Scanner scanner = new Scanner(System.in)) {
-			boolean work = true;
+    try {
+      return Integer.parseInt(input);
+    } catch (NumberFormatException e) {
+      throw new InvalidNumericValueException("Введено не целое число", e);
+    }
+  }
 
-			while (work) {
-				System.out.println("\n=== МЕНЮ ===");
-				System.out.println("1. Добавить пустой объект");
-				System.out.println("2. Добавить объект с данными");
-				System.out.println("3. Редактировать поле объекта");
-				System.out.println("4. Показать все объекты");
-				System.out.println("5. Сортировка по цене (возрастание)");
-				System.out.println("6. Выход");
+  /**
+   * Считывает число с плавающей точкой.
+   *
+   * @param scanner объект Scanner
+   * @param message сообщение пользователю
+   * @return введённое число
+   * @throws InvalidNumericValueException если введено некорректное значение
+   */
+  public static double readDouble(Scanner scanner, String message) throws InvalidNumericValueException {
+    System.out.print(message);
+    String input = scanner.nextLine();
 
-				String choice = scanner.nextLine();
+    try {
+      return Double.parseDouble(input);
+    } catch (NumberFormatException e) {
+      throw new InvalidNumericValueException("Введено не число", e);
+    }
+  }
 
-				switch (choice) {
-					case "1":
-						// Создание объекта с конструктором по умолчанию
-						furnitureList.add(new Furniture());
-						System.out.println("Пустой объект добавлен.");
-						break;
+  public static void main(String[] args) {
 
-					case "2":
-						// Создание объекта с вводом данных
-						try {
-							System.out.print("Введите тип мебели: ");
-							String type = scanner.nextLine();
+    ArrayList<Furniture> furnitureList = new ArrayList<>();
 
-							System.out.print("Введите материал: ");
-							String material = scanner.nextLine();
+    // Данные для демонстрации
+    try {
+      furnitureList.add(new Furniture("Стул", "Дерево", 10, 1200));
+      furnitureList.add(new Furniture("Стол", "Металл", 50, 3500));
+      furnitureList.add(new Furniture("Шкаф", "Дерево", 80, 7000));
+      furnitureList.add(new Furniture("Стул", "Дерево", 10, 1200)); // дубликат
+    } catch (Exception e) {
+      logger.warning("Ошибка при создании тестовых данных");
+    }
 
-							int weight = readInt(scanner, "Введите вес (кг): ");
-							double price = readDouble(scanner, "Введите цену: ");
+    try (Scanner scanner = new Scanner(System.in)) {
 
-							furnitureList.add(new Furniture(type, material, weight, price));
-							System.out.println("Объект добавлен.");
+      boolean work = true;
 
-						} catch (InvalidFurnitureDataException | InvalidNumericValueException e) {
-							System.out.println("Ошибка: " + e.getMessage());
+      while (work) {
+        clearConsole();
+        printHeader("ГЛАВНОЕ МЕНЮ");
 
-							// вывод причины (цепочки)
-							if (e.getCause() != null) {
-								System.out.println("Причина: " + e.getCause());
-							}
-						}
-						break;
+        System.out.println("1. Создание объектов");
+        System.out.println("2. Редактирование и просмотр");
+        System.out.println("3. Работа со Stream API");
+        System.out.println("4. Работа с файлами");
+        System.out.println("5. Выход");
 
-					case "3":
-						// Редактирование выбранного объекта
-						if (furnitureList.isEmpty()) {
-							System.out.println("Список пуст.");
-							break;
-						}
+        String choice = scanner.nextLine();
 
-						for (int i = 0; i < furnitureList.size(); i++) {
-							System.out.println(i + ": " + furnitureList.get(i));
-						}
+        switch (choice) {
 
-						try {
-							int index = readInt(scanner, "Введите индекс объекта: ");
+          // ---------------- СОЗДАНИЕ ----------------
+          case "1":
+            boolean createMenu = true;
 
-							if (index < 0 || index >= furnitureList.size()) {
-								System.out.println("Некорректный индекс.");
-								break;
-							}
+            while (createMenu) {
+              clearConsole();
+              printHeader("СОЗДАНИЕ ОБЪЕКТОВ");
 
-							Furniture f = furnitureList.get(index);
-							boolean editing = true;
+              System.out.println("1. Добавить пустой объект");
+              System.out.println("2. Добавить с данными");
+              System.out.println("3. Назад");
 
-							while (editing) {
-								System.out.println("\nРедактирование объекта:");
-								System.out.println("1. Тип");
-								System.out.println("2. Материал");
-								System.out.println("3. Вес");
-								System.out.println("4. Цена");
-								System.out.println("5. Удалить объект");
-								System.out.println("6. Выход");
+              switch (scanner.nextLine()) {
+                case "1":
+                  furnitureList.add(new Furniture());
+                  System.out.println("Добавлено.");
+                  pause(scanner);
+                  break;
 
-								String field = scanner.nextLine();
+                case "2":
+                  try {
+                    System.out.print("Тип: ");
+                    String type = scanner.nextLine();
 
-								switch (field) {
-									case "1":
-										System.out.println("Новый тип: ");
-										f.setType(scanner.nextLine());
-										break;
+                    System.out.print("Материал: ");
+                    String material = scanner.nextLine();
 
-									case "2":
-										System.out.println("Новый материал: ");
-										f.setMaterial(scanner.nextLine());
-										break;
+                    int weight = readInt(scanner, "Вес: ");
+                    double price = readDouble(scanner, "Цена: ");
 
-									case "3":
-										f.setWeight(readInt(scanner, "Новый вес: "));
-										break;
+                    furnitureList.add(new Furniture(type, material, weight, price));
+                    System.out.println("Добавлено.");
 
-									case "4":
-										f.setPrice(readDouble(scanner, "Новая цена: "));
-										break;
+                  } catch (Exception e) {
+                    System.out.println("Ошибка: " + e.getMessage());
+                  }
 
-									case "5":
-										furnitureList.remove(f);
+                  pause(scanner);
+                  break;
 
-									case "6":
-										editing = false;
-										break;
+                case "3":
+                  createMenu = false;
+                  break;
+              }
+            }
+            break;
 
-									default:
-										System.out.println("Неверный выбор.");
-								}
-							}
-						} catch (InvalidFurnitureDataException | InvalidNumericValueException e) {
-							System.out.println("Ошибка: " + e.getMessage());
-							if (e.getCause() != null) {
-								System.out.println("Причина: " + e.getCause());
-							}
-						}
-						break;
+          // ---------------- РЕДАКТИРОВАНИЕ ----------------
+          case "2":
+            boolean editMenu = true;
 
-					case "4":
-						// Вывод списка всех объектов
-						if (furnitureList.isEmpty()) {
-							System.out.println("Список пуст.");
-						} else {
-							for (int i = 0; i < furnitureList.size(); i++) {
-								System.out.println(i + ": " + furnitureList.get(i));
-							}
-						}
-						break;
+            while (editMenu) {
+              clearConsole();
+              printHeader("РЕДАКТИРОВАНИЕ");
 
-					case "5":
-						// Сортировка объектов по возрастанию цены
-						if (furnitureList.size() < 2) {
-							System.out.println("Должно быть хотя бы 2 объекта!");
-							break;
-						}
-							for (int i = 0; i < furnitureList.size() - 1; i++) {
-								for (int j = 0; j < furnitureList.size() - i - 1; j++) {
-									if (furnitureList.get(j).getPrice() > furnitureList.get(j + 1).getPrice()) {
-										Furniture temp = furnitureList.get(j);
-										furnitureList.set(j, furnitureList.get(j + 1));
-										furnitureList.set(j + 1, temp);
-									}
-								}
-							}
+              System.out.println("1. Редактировать объект");
+              System.out.println("2. Показать все");
+              System.out.println("3. Сортировка по цене");
+              System.out.println("4. Назад");
 
-						System.out.println("Сортировка выполнена.");
-						break;
+              switch (scanner.nextLine()) {
 
-					case "6":
-						// Завершение работы программы
-						work = false;
-						System.out.println("Завершение программы.");
-						break;
+                case "1":
+                  if (furnitureList.isEmpty()) {
+                    System.out.println("Список пуст");
+                    pause(scanner);
+                    break;
+                  }
 
-					default:
-						System.out.println("Неверный пункт меню.");
-				}
-			}
-		} catch (Exception e) {
-			Exception suppressed = new Exception("Подавленная ошибка");
-			e.addSuppressed(suppressed);
+                  for (int i = 0; i < furnitureList.size(); i++) {
+                    System.out.println(i + ": " + furnitureList.get(i));
+                  }
 
-			System.out.println("Критическая ошибка: " + e.getMessage());
-		}
-	}
+                  try {
+                    int index = readInt(scanner, "Индекс: ");
+                    Furniture f = furnitureList.get(index);
+
+                    f.setPrice(readDouble(scanner, "Новая цена: "));
+                  } catch (Exception e) {
+                    System.out.println("Ошибка");
+                  }
+
+                  pause(scanner);
+                  break;
+
+                case "2":
+                  furnitureList.forEach(System.out::println);
+                  pause(scanner);
+                  break;
+
+                case "3":
+                  furnitureList.sort((a, b) -> Double.compare(a.getPrice(), b.getPrice()));
+                  System.out.println("Отсортировано");
+                  pause(scanner);
+                  break;
+
+                case "4":
+                  editMenu = false;
+                  break;
+              }
+            }
+            break;
+
+          // ---------------- STREAM ----------------
+          case "3":
+            boolean streamMenu = true;
+
+            while (streamMenu) {
+              clearConsole();
+              printHeader("STREAM API");
+
+              System.out.println("1. Фильтрация");
+              System.out.println("2. Удалить дубликаты");
+              System.out.println("3. Сумма");
+              System.out.println("4. Самый дорогой");
+              System.out.println("5. Группировка");
+              System.out.println("6. Статистика");
+              System.out.println("7. Назад");
+
+              switch (scanner.nextLine()) {
+
+                case "1":
+                  double t = readDouble(scanner, "Цена: ");
+                  FurnitureService.filterPrice(furnitureList, t);
+                  pause(scanner);
+                  break;
+
+                case "2":
+                  FurnitureService.deleteDuplicates(furnitureList);
+                  pause(scanner);
+                  break;
+
+                case "3":
+                  FurnitureService.totalPrice(furnitureList);
+                  pause(scanner);
+                  break;
+
+                case "4":
+                  FurnitureService.maxPrice(furnitureList);
+                  pause(scanner);
+                  break;
+
+                case "5":
+                  FurnitureService.groupMaterial(furnitureList);
+                  pause(scanner);
+                  break;
+
+                case "6":
+                  FurnitureService.statistics(furnitureList);
+                  pause(scanner);
+                  break;
+
+                case "7":
+                  streamMenu = false;
+                  break;
+              }
+            }
+            break;
+
+          // ---------------- ФАЙЛЫ ----------------
+          case "4":
+            boolean fileMenu = true;
+
+            while (fileMenu) {
+              clearConsole();
+              printHeader("ФАЙЛЫ");
+
+              System.out.println("1. Сохранить");
+              System.out.println("2. Загрузить");
+              System.out.println("3. Назад");
+
+              switch (scanner.nextLine()) {
+
+                case "1":
+                  FurnitureService.saveInFile(furnitureList);
+                  pause(scanner);
+                  break;
+
+                case "2":
+                  furnitureList = new ArrayList<>(FurnitureService.loadFile());
+                  pause(scanner);
+                  break;
+
+                case "3":
+                  fileMenu = false;
+                  break;
+              }
+            }
+            break;
+
+          case "5":
+            work = false;
+            break;
+        }
+      }
+    } catch (InvalidNumericValueException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
