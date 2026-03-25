@@ -1,10 +1,7 @@
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.DoubleSummaryStatistics;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -23,7 +20,12 @@ public class FurnitureService {
     furnitureList.stream()
         .filter(furniture -> furniture.getPrice() > minPriceForFilter)
         .forEach(System.out::println);
-    System.out.println("Цена от " + minPriceForFilter);
+
+    if (furnitureList.isEmpty()) {
+      System.out.println("Список пуст.");
+    } else {
+      System.out.println("Цена от " + minPriceForFilter);
+    }
   }
 
   /**
@@ -37,8 +39,12 @@ public class FurnitureService {
     furnitureList.clear();
     furnitureList.addAll(uniqueList);
 
-    System.out.println("Дубликаты удалены. Список теперь:");
-    furnitureList.forEach(System.out::println);
+    if (uniqueList.isEmpty()) {
+      System.out.println("Список пуст.");
+    } else {
+      System.out.println("Дубликаты удалены. Список теперь:");
+      furnitureList.forEach(System.out::println);
+    }
   }
 
   /**
@@ -48,18 +54,28 @@ public class FurnitureService {
    */
   public static void totalPrice(ArrayList<Furniture> furnitureList) {
     double total = furnitureList.stream().mapToDouble(Furniture::getPrice).sum();
-    System.out.println("Общая стоймость всей мебели: " + total);
+    if (furnitureList.isEmpty()) {
+      System.out.println("Список пуст.");
+    } else {
+      System.out.println("Общая стоймость всей мебели: " + total);
+    }
   }
 
   /**
    * Находит самый дорогой объект (использует Optional).
+   * Используем Optional воизбежании исключения, так как список в методе maxPrice может оказаться пустым.
+   * Так же делаем и проверку, и выводим результат в консоль, для информирования пользователя.
    *
    * @param furnitureList список мебели
    */
   public static void maxPrice(ArrayList<Furniture> furnitureList) {
-    double maxPrice = furnitureList.stream().mapToDouble(Furniture::getPrice).max().orElse(0);
+    Optional<Furniture> max = furnitureList.stream().max(Comparator.comparingDouble(Furniture::getPrice));
 
-    furnitureList.stream().filter(f -> f.getPrice() == maxPrice).forEach(System.out::println);
+    if (max.isPresent()) {
+      System.out.println("Самый дорогой: " + max.get());
+    } else {
+      System.out.println("Список пуст, максимального элемента нет");
+    }
   }
 
   /**
